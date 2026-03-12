@@ -1,81 +1,47 @@
+"""
+Sistema de Gestión de Reservas - Hotel Boutique
+API REST con FastAPI + MongoDB
+
+Módulos:
+- Autenticación (JWT)
+- Usuarios (RBAC: huésped, recepcionista, administrador)
+- Habitaciones (CRUD, disponibilidad)
+- Reservas (CRUD, cancelación con políticas)
+- Check-in / Check-out
+- Pagos
+- Facturas
+- Reportes
+"""
 from fastapi import FastAPI, APIRouter
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
-import uuid
-from datetime import datetime, timezone
+from dotenv import load_dotenv
 
-
+# Load environment variables
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Configuration
+from config import MONGO_URL, DB_NAME, CORS_ORIGINS
 
-# Create the main app without a prefix
-app = FastAPI()
-
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
-
-
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
-
-# Include the router in the main app
-app.include_router(api_router)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
+# Routers
+from routers import (
+    auth_router,
+    usuarios_router,
+    habitaciones_router,
+    reservas_router,
+    checkin_checkout_router,
+    pagos_router,
+    facturas_router,
+    reportes_router
 )
+
+# Database initialization
+from init_db import init_database, get_database_stats
 
 # Configure logging
 logging.basicConfig(
@@ -84,6 +50,142 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
+# MongoDB connection
+client = AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifecycle manager for startup and shutdown events"""
+    # Startup
+    logger.info("Iniciando Sistema de Gestión de Reservas - Hotel Boutique")
+    logger.info(f"Conectando a MongoDB: {MONGO_URL}")
+    
+    # Initialize database with seed data
+    initialized = await init_database(db)
+    if initialized:
+        logger.info("Base de datos inicializada con datos semilla")
+    
+    stats = await get_database_stats(db)
+    logger.info(f"Estadísticas de BD: {stats}")
+    
+    yield
+    
+    # Shutdown
+    logger.info("Cerrando conexión a MongoDB")
     client.close()
+
+
+# Create FastAPI app
+app = FastAPI(
+    title="Hotel Boutique - Sistema de Gestión de Reservas",
+    description="""
+## Sistema de Gestión de Reservas para Hotel Boutique
+
+API REST para gestionar reservas, habitaciones, huéspedes y operaciones hoteleras.
+
+### Módulos disponibles:
+- **Autenticación**: Login, registro, gestión de sesiones (JWT)
+- **Usuarios**: CRUD de usuarios con roles (RBAC)
+- **Habitaciones**: Gestión de 24 habitaciones (estándar, suite, familiar)
+- **Reservas**: Consulta de disponibilidad, creación, modificación y cancelación
+- **Check-in/Check-out**: Procesos de entrada y salida
+- **Pagos**: Registro de pagos (tarjeta, efectivo, transferencia)
+- **Facturas**: Generación de facturas electrónicas
+- **Reportes**: Ocupación, ingresos, top clientes
+
+### Roles de usuario:
+- **Huésped**: Puede crear y gestionar sus propias reservas
+- **Recepcionista**: Gestiona reservas, check-in/out, facturación
+- **Administrador**: Acceso total + usuarios + reportes
+
+### Credenciales de prueba:
+- **Admin**: admin@hotelimperium.com / Admin123!
+- **Recepcionista**: recepcion@hotelimperium.com / Recep123!
+- **Huésped**: huesped@test.com / Huesped123!
+    """,
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# API Router with /api prefix
+api_router = APIRouter(prefix="/api")
+
+# Include all routers
+api_router.include_router(auth_router)
+api_router.include_router(usuarios_router)
+api_router.include_router(habitaciones_router)
+api_router.include_router(reservas_router)
+api_router.include_router(checkin_checkout_router)
+api_router.include_router(pagos_router)
+api_router.include_router(facturas_router)
+api_router.include_router(reportes_router)
+
+
+# Root endpoint
+@api_router.get("/")
+async def root():
+    """Endpoint raíz - Información del sistema"""
+    return {
+        "nombre": "Hotel Boutique - Sistema de Gestión de Reservas",
+        "version": "1.0.0",
+        "descripcion": "API REST para gestión hotelera",
+        "documentacion": "/docs",
+        "endpoints": {
+            "auth": "/api/auth",
+            "usuarios": "/api/usuarios",
+            "habitaciones": "/api/habitaciones",
+            "reservas": "/api/reservas",
+            "checkin": "/api/checkin",
+            "checkout": "/api/checkout",
+            "pagos": "/api/pagos",
+            "facturas": "/api/facturas",
+            "reportes": "/api/reportes"
+        }
+    }
+
+
+# Health check endpoint
+@api_router.get("/health")
+async def health_check():
+    """Health check para monitoreo"""
+    try:
+        # Check MongoDB connection
+        await db.command("ping")
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    
+    stats = await get_database_stats(db)
+    
+    return {
+        "status": "healthy" if db_status == "connected" else "unhealthy",
+        "database": db_status,
+        "stats": stats
+    }
+
+
+# Servicios adicionales endpoint
+@api_router.get("/servicios-adicionales")
+async def list_additional_services():
+    """Listar servicios adicionales disponibles"""
+    servicios = await db.servicios_adicionales.find({}, {"_id": 0}).to_list(100)
+    return servicios
+
+
+# Include API router in main app
+app.include_router(api_router)
+
+
+# Export db for use in routers
+__all__ = ["app", "db"]
