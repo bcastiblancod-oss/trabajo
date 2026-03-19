@@ -1,115 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* L'Aurum Boutique Hotel - Deep Emerald & Gold Theme */
+  --background: 35 30% 98%;
+  --foreground: 160 72% 8%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 160 72% 8%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 160 72% 8%;
+  
+  --primary: 160 72% 8%;
+  --primary-foreground: 160 80% 95%;
+  
+  --secondary: 32 95% 44%;
+  --secondary-foreground: 0 0% 100%;
+  
+  --muted: 214 32% 96%;
+  --muted-foreground: 215 16% 47%;
+  
+  --accent: 140 80% 97%;
+  --accent-foreground: 142 76% 20%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  
+  --border: 30 20% 90%;
+  --input: 30 20% 90%;
+  --ring: 160 72% 8%;
+  
+  --radius: 0.25rem;
+  
+  /* Custom colors */
+  --emerald-deep: #022c22;
+  --gold-burnished: #d97706;
+  --alabaster: #fcfaf8;
+  --stone-warm: #f5f5f4;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
 body {
-    margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-family: 'Manrope', sans-serif;
+  background-color: var(--alabaster);
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
 }
 
-code {
-    font-family:
-        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
 }
 
-@layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-@layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 3px;
+}
 
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
-    }
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.4);
+}
+
+/* Focus rings - Gold accent */
+*:focus-visible {
+  outline: 2px solid var(--gold-burnished);
+  outline-offset: 2px;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-primary text-primary-foreground h-12 px-8 rounded-sm font-medium tracking-wide transition-all duration-300;
+}
+
+.btn-primary:hover {
+  @apply bg-primary/90;
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  @apply bg-transparent border border-input text-foreground h-12 px-6 rounded-sm transition-all duration-300;
+}
+
+.btn-secondary:hover {
+  @apply bg-accent text-accent-foreground;
+}
+
+/* Card styles */
+.card-luxury {
+  @apply bg-white border-none rounded-sm p-6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.card-luxury:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Table styles */
+.table-luxury thead {
+  @apply text-xs uppercase tracking-widest font-semibold h-12;
+  background: rgba(245, 245, 244, 0.5);
+  color: rgb(120, 113, 108);
+}
+
+.table-luxury tbody tr {
+  @apply transition-colors border-b border-stone-100;
+}
+
+.table-luxury tbody tr:last-child {
+  @apply border-0;
+}
+
+.table-luxury tbody tr:hover {
+  background: rgba(245, 245, 244, 0.3);
+}
+
+/* Status badges */
+.badge-disponible {
+  @apply bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-reservada {
+  @apply bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-ocupada {
+  @apply bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-mantenimiento {
+  @apply bg-stone-100 text-stone-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-confirmada {
+  @apply bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-cancelada {
+  @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-checked_in {
+  @apply bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-checked_out {
+  @apply bg-stone-100 text-stone-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar active state */
+.sidebar-item-active {
+  @apply bg-primary/5 text-primary border-l-2 border-primary;
+}
+
+/* Input underline style */
+.input-underline {
+  @apply h-12 bg-transparent border-0 border-b border-input rounded-none px-0 font-light;
+}
+
+.input-underline:focus {
+  @apply ring-0 border-primary;
+}
+
+/* Gold accent for highlights */
+.gold-accent {
+  color: var(--gold-burnished);
+}
+
+.gold-bg {
+  background-color: var(--gold-burnished);
+}
+
+/* Stat card number */
+.stat-number {
+  @apply text-4xl font-semibold tracking-tight;
+  font-family: 'Playfair Display', serif;
+}
+
+/* Login page background */
+.login-bg {
+  background: linear-gradient(135deg, var(--emerald-deep) 0%, #064e3b 100%);
 }
