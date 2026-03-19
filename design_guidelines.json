@@ -1,0 +1,191 @@
+{
+  "design_system": {
+    "brand_identity": {
+      "name": "L'Aurum Boutique Hotel",
+      "archetype": "Jewel & Luxury",
+      "vibe": "Cinematic, Timeless, Discreet, tactile",
+      "core_values": [
+        "Anticipatory Service",
+        "Quiet Elegance",
+        "Privacy",
+        "Sensory Depth"
+      ]
+    },
+    "typography": {
+      "font_family": {
+        "headings": "Playfair Display, serif",
+        "body": "Manrope, sans-serif",
+        "mono": "JetBrains Mono, monospace"
+      },
+      "scale": {
+        "h1": "text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-[1.1]",
+        "h2": "text-3xl md:text-4xl font-medium tracking-tight",
+        "h3": "text-2xl font-medium tracking-normal",
+        "h4": "text-xl font-medium tracking-wide uppercase",
+        "body_lg": "text-lg leading-relaxed",
+        "body_base": "text-base leading-relaxed text-muted-foreground",
+        "caption": "text-xs tracking-widest uppercase font-semibold text-muted-foreground/80"
+      },
+      "imports": [
+        "@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&display=swap');"
+      ]
+    },
+    "colors": {
+      "theme": "light",
+      "palette": {
+        "primary": {
+          "DEFAULT": "#022c22", 
+          "foreground": "#ecfdf5",
+          "description": "Deep Emerald - The color of old velvet and deep forests."
+        },
+        "secondary": {
+          "DEFAULT": "#d97706",
+          "foreground": "#ffffff",
+          "description": "Burnished Gold - Used sparingly for key actions and status highlights."
+        },
+        "background": {
+          "DEFAULT": "#fcfaf8",
+          "dark": "#020617",
+          "description": "Alabaster Bone - Warm, paper-like texture, never clinical white."
+        },
+        "surface": {
+          "DEFAULT": "#ffffff",
+          "dark": "#0f172a",
+          "description": "Pure white cards on the off-white background create subtle depth."
+        },
+        "muted": {
+          "DEFAULT": "#f1f5f9",
+          "foreground": "#64748b"
+        },
+        "accent": {
+          "DEFAULT": "#f0fdf4",
+          "foreground": "#166534"
+        }
+      }
+    },
+    "spacing": {
+      "container_padding": "p-6 md:p-10 lg:p-16",
+      "element_gap": "gap-6 md:gap-8",
+      "section_gap": "gap-16 md:gap-24"
+    },
+    "borders": {
+      "radius": "rounded-sm",
+      "width": "border",
+      "style": "solid",
+      "color": "border-stone-200"
+    },
+    "shadows": {
+      "card": "shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
+      "floating": "shadow-[0_12px_24px_rgba(0,0,0,0.08)]",
+      "glow": "shadow-[0_0_16px_rgba(217,119,6,0.3)]"
+    }
+  },
+  "layout_strategies": {
+    "dashboard_grid": {
+      "type": "Bento Grid",
+      "description": "High density but breathable. Asymmetric spans.",
+      "classes": "grid grid-cols-1 md:grid-cols-4 gap-6",
+      "areas": [
+        "Stats (col-span-1)",
+        "Main Chart (col-span-2 or 3)",
+        "Recent Activity (row-span-2 col-span-1)"
+      ]
+    },
+    "room_list": {
+      "type": "Card Grid",
+      "classes": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
+      "card_style": "Aspect-ratio 4/3 image top, refined typography bottom. No buttons visible until hover."
+    },
+    "marketing_hero": {
+      "type": "Split Asymmetry",
+      "classes": "flex flex-col lg:flex-row min-h-[80vh]",
+      "image_style": "lg:w-1/2 h-full object-cover grayscale-[20%] hover:grayscale-0 transition-all duration-700 ease-out"
+    }
+  },
+  "component_styles": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground h-12 px-8 rounded-sm font-medium tracking-wide hover:bg-primary/90 transition-transform active:scale-95",
+      "secondary": "bg-transparent border border-input text-foreground h-12 px-6 rounded-sm hover:bg-accent hover:text-accent-foreground",
+      "ghost": "hover:bg-transparent hover:text-secondary font-serif italic text-lg"
+    },
+    "cards": {
+      "default": "bg-card text-card-foreground border-none shadow-card rounded-sm p-6",
+      "interactive": "group hover:shadow-floating transition-all duration-300 border border-transparent hover:border-border/50 cursor-pointer"
+    },
+    "inputs": {
+      "default": "h-12 bg-transparent border-b border-input rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary placeholder:text-muted-foreground/50 font-light"
+    },
+    "tables": {
+      "wrapper": "rounded-sm border border-stone-100 overflow-hidden",
+      "header": "bg-stone-50/50 text-xs uppercase tracking-widest text-stone-500 font-semibold h-12",
+      "row": "hover:bg-stone-50/30 transition-colors border-b border-stone-100 last:border-0",
+      "cell": "py-4 text-sm font-medium text-stone-700"
+    }
+  },
+  "assets": {
+    "images": {
+      "rooms": [
+        {
+          "url": "https://images.unsplash.com/photo-1758448755969-8791367cf5c5",
+          "alt": "Master Suite - King Bed with Ocean View",
+          "category": "suite"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1759264244741-7175af0b7e75",
+          "alt": "Executive Desk Workspace",
+          "category": "amenity"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1641851962761-43d3c1a34360",
+          "alt": "Boutique Lounge Corner",
+          "category": "interior"
+        }
+      ],
+      "staff": [
+        {
+          "url": "https://images.unsplash.com/photo-1740153204804-200310378f2f",
+          "alt": "Sarah Jenkins - Head Concierge",
+          "category": "avatar"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1610219618952-db382fe95b0f",
+          "alt": "Hotel Staff Member",
+          "category": "avatar"
+        }
+      ],
+      "atmosphere": [
+        {
+          "url": "https://images.unsplash.com/photo-1762417422532-7bdaaf7d457a",
+          "alt": "Hotel Exterior at Night",
+          "category": "exterior"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1708804654353-7ef66cba7776",
+          "alt": "Infinity Pool & Spa",
+          "category": "amenity"
+        }
+      ]
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-1",
+      "preferred": [
+        "BedDouble", "ConciergeBell", "CreditCard", "CalendarRange", "Utensils", "Wifi", "UserCheck"
+      ]
+    }
+  },
+  "universal_guidelines": [
+    "NEVER use default blue/sky blue colors. Use Emerald/Forest greens or Metallic Golds.",
+    "Avoid standard 'dashboard look'. Make it look like a digital magazine or a high-end print manifest.",
+    "Transitions must be 'ease-out' and slow (duration-500 or duration-700).",
+    "All interactive elements must have `data-testid` attributes.",
+    "Do not use gradients on text. It looks cheap.",
+    "Use 'sonner' for toasts.",
+    "Marketing pages use custom HTML/Tailwind. Dashboards use customized Shadcn."
+  ],
+  "accessibility_checklist": [
+    "Ensure contrast ratio of 4.5:1 for normal text.",
+    "Interactive elements must have focus rings (customized to gold/emerald).",
+    "Images must have descriptive alt text."
+  ]
+}
