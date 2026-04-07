@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const getHeaders = (token) => ({
   'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+console.log('API_URL:', API_URL, 'ENV:', process.env.REACT_APP_BACKEND_URL);
 
 const AuthContext = createContext(null);
 
