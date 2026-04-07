@@ -6,11 +6,11 @@ const getHeaders = (token) => ({
 });
 
 const handleResponse = async (response) => {
+  const data = await response.json();
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || 'Error en la solicitud');
+    throw new Error(data.detail || 'Error en la solicitud');
   }
-  return response.json();
+  return data;
 };
 
 // Habitaciones
