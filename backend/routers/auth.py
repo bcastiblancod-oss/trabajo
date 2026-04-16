@@ -2,7 +2,7 @@
 Router de Autenticación - Hotel Boutique
 Endpoints: login, registro, cambio de contraseña
 """
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, BackgroundTasks
 from datetime import datetime, timezone
 
 from models import (
@@ -13,6 +13,7 @@ from utils import (
     hash_password, verify_password, create_access_token,
     get_current_user, TokenPayload
 )
+from services.email_service import send_registration_email
 
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
@@ -80,7 +81,7 @@ async def login(request: LoginRequest, db=Depends(lambda: None)):
 
 
 @router.post("/registro", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
-async def register(request: UsuarioCreate):
+async def register(request: UsuarioCreate, background_tasks: BackgroundTasks):
     """
     Registrar nuevo usuario (solo huéspedes pueden auto-registrarse).
     Administradores y recepcionistas se crean desde /usuarios.
@@ -128,6 +129,13 @@ async def register(request: UsuarioCreate):
     }
     
     await db.usuarios.insert_one(user_doc)
+    
+    # Enviar correo de bienvenida en segundo plano
+    background_tasks.add_task(
+        send_registration_email,
+        request.email,
+        request.nombre_completo
+    )
     
     return UsuarioResponse(
         id=user_id,

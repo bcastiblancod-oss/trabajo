@@ -2,7 +2,7 @@
 Router de Reservas - Hotel Boutique
 CRUD de reservas, disponibilidad, cancelación (RF-02, RF-03, RF-04)
 """
-from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi import APIRouter, HTTPException, status, Depends, Query, BackgroundTasks
 from datetime import datetime, timezone, date
 from typing import Optional, List
 import uuid
@@ -18,6 +18,7 @@ from utils import (
     calculate_cancellation_refund, can_modify_reservation,
     validate_dates
 )
+from services.email_service import send_reservation_email, send_cancellation_email
 
 
 router = APIRouter(prefix="/reservas", tags=["Reservas"])
@@ -184,6 +185,7 @@ async def get_reservation(
 @router.post("", response_model=ReservaResponse, status_code=status.HTTP_201_CREATED)
 async def create_reservation(
     request: ReservaCreate,
+    background_tasks: BackgroundTasks,
     current_user: TokenPayload = Depends(get_current_user)
 ):
     """
@@ -300,6 +302,20 @@ async def create_reservation(
     await db.habitaciones.update_one(
         {"id": request.habitacion_id},
         {"$set": {"estado": "reservada", "updated_at": now.isoformat()}}
+    )
+    
+    # Enviar correo de confirmación en segundo plano
+    background_tasks.add_task(
+        send_reservation_email,
+        request.huesped.email,
+        request.huesped.nombre_completo,
+        codigo,
+        room["numero"],
+        tipo["nombre"],
+        request.fecha_checkin.isoformat(),
+        request.fecha_checkout.isoformat(),
+        precio_total,
+        request.num_huespedes
     )
     
     # Log audit
@@ -485,6 +501,7 @@ async def update_reservation(
 async def cancel_reservation(
     reserva_id: str,
     request: CancelacionRequest,
+    background_tasks: BackgroundTasks,
     current_user: TokenPayload = Depends(get_current_user)
 ):
     """
@@ -558,6 +575,15 @@ async def cancel_reservation(
         },
         "fecha": now.isoformat()
     })
+    
+    # Enviar correo de cancelación en segundo plano
+    background_tasks.add_task(
+        send_cancellation_email,
+        reservation["huesped"]["email"],
+        reservation["huesped"]["nombre_completo"],
+        reservation["codigo"],
+        request.motivo
+    )
     
     return CancelacionResponse(
         reserva_id=reserva_id,
