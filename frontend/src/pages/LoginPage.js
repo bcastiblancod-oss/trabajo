@@ -10,6 +10,7 @@ const LoginPage = () => {
   const { login, register } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,12 +19,67 @@ const LoginPage = () => {
     telefono: ''
   });
 
+  const validateDocument = (value) => {
+    // Documento: solo números, mínimo 6 dígitos, máximo 15
+    const documentRegex = /^\d{6,15}$/;
+    return documentRegex.test(value);
+  };
+
+  const validatePhone = (value) => {
+    // Teléfono: permite +, números, espacios y guiones, mínimo 7 caracteres
+    const phoneRegex = /^[\+]?[\d\s\-]{7,20}$/;
+    return phoneRegex.test(value);
+  };
+
+  const validateName = (value) => {
+    // Nombre: solo letras y espacios, mínimo 3 caracteres
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]{3,100}$/;
+    return nameRegex.test(value);
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Limpiar error al escribir
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!isLogin) {
+      if (!formData.nombre_completo || !validateName(formData.nombre_completo)) {
+        newErrors.nombre_completo = 'Ingrese un nombre válido (solo letras, mínimo 3 caracteres)';
+      }
+      
+      if (!formData.documento || !validateDocument(formData.documento)) {
+        newErrors.documento = 'Documento inválido (solo números, entre 6 y 15 dígitos)';
+      }
+      
+      if (formData.telefono && !validatePhone(formData.telefono)) {
+        newErrors.telefono = 'Teléfono inválido (formato: +57 300 123 4567)';
+      }
+      
+      if (formData.password.length < 6) {
+        newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      toast.error('Por favor corrija los errores en el formulario');
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -85,9 +141,13 @@ const LoginPage = () => {
                     value={formData.nombre_completo}
                     onChange={handleChange}
                     required={!isLogin}
-                    className="h-12 border-0 border-b border-input rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary"
+                    placeholder="Ej: Juan Pérez García"
+                    className={`h-12 border-0 border-b rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary ${errors.nombre_completo ? 'border-red-500' : 'border-input'}`}
                     data-testid="register-name-input"
                   />
+                  {errors.nombre_completo && (
+                    <p className="text-xs text-red-500 mt-1">{errors.nombre_completo}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="documento" className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">
@@ -99,9 +159,14 @@ const LoginPage = () => {
                     value={formData.documento}
                     onChange={handleChange}
                     required={!isLogin}
-                    className="h-12 border-0 border-b border-input rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary"
+                    placeholder="Ej: 1234567890"
+                    maxLength={15}
+                    className={`h-12 border-0 border-b rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary ${errors.documento ? 'border-red-500' : 'border-input'}`}
                     data-testid="register-document-input"
                   />
+                  {errors.documento && (
+                    <p className="text-xs text-red-500 mt-1">{errors.documento}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="telefono" className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">
@@ -112,9 +177,13 @@ const LoginPage = () => {
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleChange}
-                    className="h-12 border-0 border-b border-input rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary"
+                    placeholder="Ej: +57 300 123 4567"
+                    className={`h-12 border-0 border-b rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary ${errors.telefono ? 'border-red-500' : 'border-input'}`}
                     data-testid="register-phone-input"
                   />
+                  {errors.telefono && (
+                    <p className="text-xs text-red-500 mt-1">{errors.telefono}</p>
+                  )}
                 </div>
               </>
             )}
@@ -146,9 +215,13 @@ const LoginPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="h-12 border-0 border-b border-input rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary"
+                placeholder={isLogin ? '' : 'Mínimo 6 caracteres'}
+                className={`h-12 border-0 border-b rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary ${errors.password ? 'border-red-500' : 'border-input'}`}
                 data-testid="login-password-input"
               />
+              {errors.password && (
+                <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+              )}
             </div>
 
             <Button

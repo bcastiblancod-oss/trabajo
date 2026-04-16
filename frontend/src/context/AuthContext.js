@@ -56,12 +56,12 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ email, password })
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Error al iniciar sesión');
+      throw new Error(data.detail || 'Error al iniciar sesión');
     }
 
-    const data = await response.json();
     localStorage.setItem('token', data.access_token);
     setToken(data.access_token);
     setUser(data.usuario);
@@ -77,12 +77,13 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ ...userData, rol: 'huesped' })
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Error al registrarse');
+      throw new Error(data.detail || 'Error al registrarse');
     }
 
-    return await response.json();
+    return data;
   };
 
   const logout = () => {
